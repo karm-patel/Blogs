@@ -122,17 +122,16 @@ window.onload = wrap_img;
     <ul class="section-nav">
 <li class="toc-entry toc-h2"><a href="#To-build-a-model-able-to-count-fingers-as-well-as-distinguish-between-left-and-right-hand.">To build a model able to count fingers as well as distinguish between left and right hand. </a>
 <ul>
-<li class="toc-entry toc-h3"><a href="#I-have-used-ResNet50-model-and-trained-it-with-help-of-Tranfer-learning-approach-using-Keras.">I have used ResNet50 model and trained it with help of Tranfer learning approach using Keras. </a></li>
-<li class="toc-entry toc-h3"><a href="#I-already-load-all-images-and-saved-in-"fingers_train.npz"-file">I already load all images and saved in &quot;fingers_train.npz&quot; file </a></li>
+<li class="toc-entry toc-h3"><a href="#Importing-Necessary-Libraries">Importing Necessary Libraries </a></li>
+<li class="toc-entry toc-h3"><a href="#Load-Data">Load Data </a></li>
 <li class="toc-entry toc-h3"><a href="#mapping-of-original-labels-with-categorical-variables">Mapping of original labels with categorical variables</a></li>
 <li class="toc-entry toc-h3"><a href="#Exploring-Datasets">Exploring Datasets </a></li>
-<li class="toc-entry toc-h3"><a href="#now-we-need-to-apply-preprocessing-on-images-for-resnet-model">Now, We need to apply preprocessing on images for ResNet model.</a></li>
-<li class="toc-entry toc-h3"><a href="#Load-Resnet50-Model">Load Resnet50 Model </a>
-<ul>
-<li class="toc-entry toc-h4"><a href="#In-order-to-train-our-model-we-does-not-need-to-train-all-weights.-We-have-to-train-only-last-layer-as-per-our-dataset.-So-We-have-to-freeze-all-previous-layers'-weights.">In order to train our model we does not need to train all weights. We have to train only last layer as per our dataset. So We have to freeze all previous layers&#39; weights. </a></li>
-</ul>
-</li>
-<li class="toc-entry toc-h3"><a href="#Now-we'll-append-follwing-layers-to-this-ResNet50-model-in-Keras-Sequential-model">Now we&#39;ll append follwing layers to this ResNet50 model in Keras Sequential model </a></li>
+<li class="toc-entry toc-h3"><a href="#preprocessing-on-images-for-resnet50-model">Preprocessing on images for ResNet50 model.</a></li>
+<li class="toc-entry toc-h3"><a href="#Load-Resnet50-Model">Load Resnet50 Model </a></li>
+<li class="toc-entry toc-h3"><a href="#Freezing-Layers">Freezing Layers </a></li>
+<li class="toc-entry toc-h3"><a href="#Adding-Custom-Layers-in--Keras-Sequential-model">Adding Custom Layers in  Keras Sequential model </a></li>
+<li class="toc-entry toc-h3"><a href="#Callbacks">Callbacks </a></li>
+<li class="toc-entry toc-h3"><a href="#model.compile()">model.compile() </a></li>
 <li class="toc-entry toc-h3"><a href="#Training">Training </a></li>
 <li class="toc-entry toc-h3"><a href="#Ploting-Accuracy-&-Loss">Ploting Accuracy &amp; Loss </a></li>
 <li class="toc-entry toc-h3"><a href="#Try-Your-Own-Image-&-Get-Prediction">Try Your Own Image &amp; Get Prediction </a></li>
@@ -153,7 +152,11 @@ window.onload = wrap_img;
 <h2 id="To-build-a-model-able-to-count-fingers-as-well-as-distinguish-between-left-and-right-hand.">
 <a class="anchor" href="#To-build-a-model-able-to-count-fingers-as-well-as-distinguish-between-left-and-right-hand." aria-hidden="true"><span class="octicon octicon-link"></span></a>To build a model able to count fingers as well as distinguish between left and right hand.<a class="anchor-link" href="#To-build-a-model-able-to-count-fingers-as-well-as-distinguish-between-left-and-right-hand."> </a>
 </h2>
-<p>Dataset - <a href="https://www.kaggle.com/koryakinp/fingers">https://www.kaggle.com/koryakinp/fingers</a></p>
+<ul>
+<li>Dataset - <a href="https://www.kaggle.com/koryakinp/fingers">https://www.kaggle.com/koryakinp/fingers</a><br>
+</li>
+<li>I have used <strong>ResNet50</strong> model and trained it with help of Tranfer learning approach using Keras.</li>
+</ul>
 
 </div>
 </div>
@@ -161,8 +164,8 @@ window.onload = wrap_img;
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="I-have-used-ResNet50-model-and-trained-it-with-help-of-Tranfer-learning-approach-using-Keras.">
-<a class="anchor" href="#I-have-used-ResNet50-model-and-trained-it-with-help-of-Tranfer-learning-approach-using-Keras." aria-hidden="true"><span class="octicon octicon-link"></span></a>I have used <strong>ResNet50</strong> model and trained it with help of Tranfer learning approach using Keras.<a class="anchor-link" href="#I-have-used-ResNet50-model-and-trained-it-with-help-of-Tranfer-learning-approach-using-Keras."> </a>
+<h3 id="Importing-Necessary-Libraries">
+<a class="anchor" href="#Importing-Necessary-Libraries" aria-hidden="true"><span class="octicon octicon-link"></span></a>Importing Necessary Libraries<a class="anchor-link" href="#Importing-Necessary-Libraries"> </a>
 </h3>
 </div>
 </div>
@@ -219,9 +222,15 @@ window.onload = wrap_img;
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id='I-already-load-all-images-and-saved-in-"fingers_train.npz"-file'>
-<a class="anchor" href="#I-already-load-all-images-and-saved-in-" fingers_train.npz aria-hidden="true"><span class="octicon octicon-link"></span></a>I already load all images and saved in "<strong>fingers_train.npz</strong>" file<a class="anchor-link" href="#I-already-load-all-images-and-saved-in-%22fingers_train.npz%22-file"> </a>
+<h3 id="Load-Data">
+<a class="anchor" href="#Load-Data" aria-hidden="true"><span class="octicon octicon-link"></span></a>Load Data<a class="anchor-link" href="#Load-Data"> </a>
 </h3>
+<ul>
+<li>I already load all images and saved in "<strong>fingers_train.npz</strong>" file</li>
+<li>You can find 'fingers_train.npz' file <a href="https://drive.google.com/file/d/1pFlrW-1AkCM7LuxfkhXlFNZ7PDaJsZdn/view?usp=sharing">here</a>
+</li>
+</ul>
+
 </div>
 </div>
 </div>
@@ -379,9 +388,9 @@ y_train shape:(18000, 1)
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h3>
-<a class="anchor" href="#now-we-need-to-apply-preprocessing-on-images-for-resnet-model" aria-hidden="true"><span class="octicon octicon-link"></span></a>Now, We need to apply preprocessing on images for ResNet model.<br>
+<a class="anchor" href="#preprocessing-on-images-for-resnet50-model" aria-hidden="true"><span class="octicon octicon-link"></span></a>Preprocessing on images for ResNet50 model.<br>
 </h3>
-<p>Preprocess function will do follwing tasks:</p>
+<p>Every Deep Learnig Model need input in required format. Keras Provide functions for each model, ResNet50's Preprocess function will do follwing tasks:</p>
 <ol>
 <li>The images are converted from RGB to BGR, then each color channel is zero-centered with respect to the ImageNet dataset, without scaling</li>
 <li>Y vector will be converted into one-hot-encodding format<br>
@@ -436,6 +445,7 @@ e.g. -  we have 12 ouput classes then,<br>
 <h3 id="Load-Resnet50-Model">
 <a class="anchor" href="#Load-Resnet50-Model" aria-hidden="true"><span class="octicon octicon-link"></span></a>Load Resnet50 Model<a class="anchor-link" href="#Load-Resnet50-Model"> </a>
 </h3>
+<p><strong>Parameters:</strong></p>
 <ul>
 <li>include_top = By seeting this as <strong>False</strong> will allow feature extraction by removing the last dense layers </li>
 <li>weights = Here we will use weights of pretrained <strong>"ImageNet"</strong> model. This will reduce time &amp; computation cost.</li>
@@ -857,9 +867,15 @@ ________________________________________________________________________________
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h4 id="In-order-to-train-our-model-we-does-not-need-to-train-all-weights.-We-have-to-train-only-last-layer-as-per-our-dataset.-So-We-have-to-freeze-all-previous-layers'-weights.">
-<a class="anchor" href="#In-order-to-train-our-model-we-does-not-need-to-train-all-weights.-We-have-to-train-only-last-layer-as-per-our-dataset.-So-We-have-to-freeze-all-previous-layers'-weights." aria-hidden="true"><span class="octicon octicon-link"></span></a>In order to train our model we does not need to train all weights. We have to train only last layer as per our dataset. So We have to freeze all previous layers' weights.<a class="anchor-link" href="#In-order-to-train-our-model-we-does-not-need-to-train-all-weights.-We-have-to-train-only-last-layer-as-per-our-dataset.-So-We-have-to-freeze-all-previous-layers'-weights."> </a>
-</h4>
+<h3 id="Freezing-Layers">
+<a class="anchor" href="#Freezing-Layers" aria-hidden="true"><span class="octicon octicon-link"></span></a>Freezing Layers<a class="anchor-link" href="#Freezing-Layers"> </a>
+</h3>
+<ul>
+<li>In order to train our model we does not need to train all weights! </li>
+<li>We have to train only last layer as per our dataset. </li>
+<li>So We have to freeze all previous layers' weights. </li>
+</ul>
+
 </div>
 </div>
 </div>
@@ -904,9 +920,10 @@ ________________________________________________________________________________
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Now-we'll-append-follwing-layers-to-this-ResNet50-model-in-Keras-Sequential-model">
-<a class="anchor" href="#Now-we'll-append-follwing-layers-to-this-ResNet50-model-in-Keras-Sequential-model" aria-hidden="true"><span class="octicon octicon-link"></span></a>Now we'll append follwing layers to this ResNet50 model in Keras Sequential model<a class="anchor-link" href="#Now-we'll-append-follwing-layers-to-this-ResNet50-model-in-Keras-Sequential-model"> </a>
+<h3 id="Adding-Custom-Layers-in--Keras-Sequential-model">
+<a class="anchor" href="#Adding-Custom-Layers-in--Keras-Sequential-model" aria-hidden="true"><span class="octicon octicon-link"></span></a>Adding Custom Layers in  Keras Sequential model<a class="anchor-link" href="#Adding-Custom-Layers-in--Keras-Sequential-model"> </a>
 </h3>
+<p>Along With ResNet50 We Will add following Custom Layers:</p>
 <ol>
 <li>Lambda Layer : to convert Image into given size (224,224)</li>
 <li>Flatten() -&gt; BatchNormalization()</li>
@@ -966,6 +983,17 @@ ________________________________________________________________________________
 </div>
     
 
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Callbacks">
+<a class="anchor" href="#Callbacks" aria-hidden="true"><span class="octicon octicon-link"></span></a>Callbacks<a class="anchor-link" href="#Callbacks"> </a>
+</h3>
+<p>In Keras, we can use callbacks in our model to perform certain  actions in the training such as weight saving</p>
+
+</div>
+</div>
+</div>
     
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -973,8 +1001,7 @@ ________________________________________________________________________________
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#actions in the training such as weight saving.</span>
-<span class="n">check_point</span> <span class="o">=</span> <span class="n">keras</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">ModelCheckpoint</span><span class="p">(</span><span class="n">filepath</span><span class="o">=</span> <span class="n">dataset_dir</span><span class="o">+</span><span class="s1">'fingers.h5'</span><span class="p">,</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">check_point</span> <span class="o">=</span> <span class="n">keras</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">ModelCheckpoint</span><span class="p">(</span><span class="n">filepath</span><span class="o">=</span> <span class="n">dataset_dir</span><span class="o">+</span><span class="s1">'fingers.h5'</span><span class="p">,</span>
                                              <span class="n">monitor</span><span class="o">=</span><span class="s1">'val_acc'</span><span class="p">,</span>
                                              <span class="n">mode</span><span class="o">=</span><span class="s1">'max'</span><span class="p">,</span>
                                              <span class="n">save_best_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -990,6 +1017,10 @@ ________________________________________________________________________________
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="model.compile()">
+<a class="anchor" href="#model.compile()" aria-hidden="true"><span class="octicon octicon-link"></span></a>model.compile()<a class="anchor-link" href="#model.compile()"> </a>
+</h3>
+<p><strong>Parameters:</strong></p>
 <ul>
 <li>Optimization method = RMSprop</li>
 <li>Learning rate: Now, We are using most of pretrained weights so we have to keep LR very samll</li>
@@ -1075,6 +1106,14 @@ WARNING:tensorflow:Can save best model only with val_acc available, skipping.
 </div>
     
 
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Wohhh! We are getting <strong>100% accuracy</strong> on validation set</p>
+
+</div>
+</div>
+</div>
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -1260,6 +1299,11 @@ _________________________________________________________________
 <h3 id="Try-Your-Own-Image-&amp;-Get-Prediction">
 <a class="anchor" href="#Try-Your-Own-Image-&amp;-Get-Prediction" aria-hidden="true"><span class="octicon octicon-link"></span></a>Try Your Own Image &amp; Get Prediction<a class="anchor-link" href="#Try-Your-Own-Image-&amp;-Get-Prediction"> </a>
 </h3>
+<ul>
+<li>To try own image first we need to resize it</li>
+<li>then we need dark background like we have data in traing set</li>
+</ul>
+
 </div>
 </div>
 </div>
@@ -1284,10 +1328,12 @@ _________________________________________________________________
 <span class="c1">#to set dark background</span>
 <span class="k">def</span> <span class="nf">blaken_image</span><span class="p">(</span><span class="n">img_arr</span><span class="p">,</span><span class="n">threshold</span><span class="o">=</span><span class="mi">80</span><span class="p">):</span>
   <span class="n">w</span> <span class="p">,</span><span class="n">h</span> <span class="o">=</span> <span class="n">img_arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">img_arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+  <span class="c1">#initialize with dark Image</span>
   <span class="n">new_img</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">w</span><span class="p">,</span><span class="n">h</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
   <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">w</span><span class="p">):</span>
     <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">h</span><span class="p">):</span>
       <span class="n">rgb</span> <span class="o">=</span> <span class="n">img_arr</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span>
+      <span class="c1">#if redness is grater then it is hand</span>
       <span class="k">if</span> <span class="n">rgb</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">threshold</span><span class="p">:</span>
         <span class="n">new_img</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">rgb</span>
   <span class="k">return</span> <span class="n">new_img</span>
