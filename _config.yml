@@ -40,7 +40,7 @@ baseurl: "/Finger-Count-ResNet" # the subpath of your site, e.g. "/blog".
 minima:
   social_links:
     twitter: KarmKinetic
-    github: https://github.com/karm216
+    github: karm216
 
 # Set this to true to get LaTeX math equation support
 use_math: 
