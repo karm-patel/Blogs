@@ -4,8 +4,6 @@ title: About Me
 permalink: /about/
 ---
 
-This website is powered by **[fastpages](https://github.com/fastai/fastpages)** [^1].
+You can find more about me on My LinkedIn [profile](https://www.linkedin.com/in/karm-patel-865825196/)
 
-
-
-[^1]:a blogging platform that natively supports Jupyter notebooks in addition to other formats.
+### Have a Good day!
