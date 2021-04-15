@@ -1,1 +1,1 @@
-Sitemap: https://karm216.github.io/Finger-Count-ResNet/sitemap.xml
+Sitemap: https://karm216.github.io/Fastpages-Notebooks/sitemap.xml
