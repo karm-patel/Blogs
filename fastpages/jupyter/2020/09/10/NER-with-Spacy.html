@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="twitter:card" content="summary_large_image" /><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Name Entity Recognition using SpaCy | Karm’s Blogs</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="Name Entity Recognition using SpaCy" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="From given interactive voice response identify queries &amp; corresponding action keys" />
+<meta property="og:description" content="From given interactive voice response identify queries &amp; corresponding action keys" />
+<link rel="canonical" href="https://karm216.github.io/Fastpages-Notebooks/fastpages/jupyter/2020/09/10/NER-with-Spacy.html" />
+<meta property="og:url" content="https://karm216.github.io/Fastpages-Notebooks/fastpages/jupyter/2020/09/10/NER-with-Spacy.html" />
+<meta property="og:site_name" content="Karm’s Blogs" />
+<meta property="og:image" content="https://karm216.github.io/Fastpages-Notebooks/images/some_folder/your_image.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-09-10T00:00:00-05:00" />
+<script type="application/ld+json">
+{"description":"From given interactive voice response identify queries &amp; corresponding action keys","url":"https://karm216.github.io/Fastpages-Notebooks/fastpages/jupyter/2020/09/10/NER-with-Spacy.html","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://karm216.github.io/Fastpages-Notebooks/fastpages/jupyter/2020/09/10/NER-with-Spacy.html"},"headline":"Name Entity Recognition using SpaCy","dateModified":"2020-09-10T00:00:00-05:00","datePublished":"2020-09-10T00:00:00-05:00","image":"https://karm216.github.io/Fastpages-Notebooks/images/some_folder/your_image.png","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/Fastpages-Notebooks/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://karm216.github.io/Fastpages-Notebooks/feed.xml" title="Karm's Blogs" /><link rel="shortcut icon" type="image/x-icon" href="/Fastpages-Notebooks/images/favicon.ico"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Primer/15.2.0/primer.css" integrity="sha512-xTz2ys4coGAOz8vuV1NcQBkgVmKhsSEtjbqyMJbBHRplFuvKIUo6xhLHpAyPt9mfR6twHJgn9OgVLuqOvjeBhg==" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css" integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog==" crossorigin="anonymous" />
+
+<script>
+function wrap_img(fn) {
+    if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading") {
+        var elements = document.querySelectorAll(".post img");
+        Array.prototype.forEach.call(elements, function(el, i) {
+            if (el.getAttribute("title") && (el.className != "emoji")) {
+                const caption = document.createElement('figcaption');
+                var node = document.createTextNode(el.getAttribute("title"));
+                caption.appendChild(node);
+                const wrapper = document.createElement('figure');
+                wrapper.className = 'image';
+                el.parentNode.insertBefore(wrapper, el);
+                el.parentNode.removeChild(el);
+                wrapper.appendChild(el);
+                wrapper.appendChild(caption);
+            }
+        });
+    } else { document.addEventListener('DOMContentLoaded', fn); }
+}
+window.onload = wrap_img;
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+    // add link icon to anchor tags
+    var elem = document.querySelectorAll(".anchor-link")
+    elem.forEach(e => (e.innerHTML = '<i class="fas fa-link fa-xs"></i>'));
+    });
+</script>
+</head>
+<body><header class="site-header">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/Fastpages-Notebooks/">Karm&#39;s Blogs</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/Fastpages-Notebooks/about/">About Me</a><a class="page-link" href="/Fastpages-Notebooks/search/">Search</a><a class="page-link" href="/Fastpages-Notebooks/categories/">Tags</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Name Entity Recognition using SpaCy</h1><p class="page-description">From given interactive voice response identify queries & corresponding action keys</p><p class="post-meta post-meta-title"><time class="dt-published" datetime="2020-09-10T00:00:00-05:00" itemprop="datePublished">
+        Sep 10, 2020
+      </time>
+       • <span class="read-time" title="Estimated read time">
+    
+    
+      3 min read
+    
+</span></p>
+
+    
+      <p class="category-tags"><i class="fas fa-tags category-tags-icon"></i></i> 
+      
+        <a class="category-tags-link" href="/Fastpages-Notebooks/categories/#fastpages">fastpages</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/Fastpages-Notebooks/categories/#jupyter">jupyter</a>
+        
+      
+      </p>
+    
+
+    
+      
+        <div class="pb-5 d-flex flex-wrap flex-justify-end">
+          <div class="px-2">
+
+    <a href="https://github.com/karm216/Fastpages-Notebooks/tree/master/_notebooks/2020-09-10-NER with Spacy.ipynb" role="button" target="_blank">
+<img class="notebook-badge-image" src="/Fastpages-Notebooks/assets/badges/github.svg" alt="View On GitHub">
+    </a>
+</div>
+
+          <div class="px-2">
+    <a href="https://mybinder.org/v2/gh/karm216/Fastpages-Notebooks/master?filepath=_notebooks%2F2020-09-10-NER+with+Spacy.ipynb" target="_blank">
+        <img class="notebook-badge-image" src="/Fastpages-Notebooks/assets/badges/binder.svg" alt="Open In Binder"/>
+    </a>
+</div>
+
+          <div class="px-2">
+    <a href="https://colab.research.google.com/github/karm216/Fastpages-Notebooks/blob/master/_notebooks/2020-09-10-NER with Spacy.ipynb" target="_blank">
+        <img class="notebook-badge-image" src="/Fastpages-Notebooks/assets/badges/colab.svg" alt="Open In Colab"/>
+    </a>
+</div>
+        </div>
+      </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <ul class="section-nav">
+<li class="toc-entry toc-h3"><a href="#Name-Entity-Recognition-using-SpaCy">Name Entity Recognition using SpaCy </a></li>
+<li class="toc-entry toc-h3"><a href="#Exploring-Dataset">Exploring Dataset </a></li>
+<li class="toc-entry toc-h3"><a href="#Creating-SpaCy-Model:">Creating SpaCy Model: </a></li>
+<li class="toc-entry toc-h3"><a href="#Training">Training </a></li>
+<li class="toc-entry toc-h3"><a href="#Testing">Testing </a></li>
+</ul><!--
+#################################################
+### THIS FILE WAS AUTOGENERATED! DO NOT EDIT! ###
+#################################################
+# file to edit: _notebooks/2020-09-10-NER with Spacy.ipynb
+-->
+
+<div class="container" id="notebook-container">
+        
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Name-Entity-Recognition-using-SpaCy">
+<a class="anchor" href="#Name-Entity-Recognition-using-SpaCy" aria-hidden="true"><span class="octicon octicon-link"></span></a>Name Entity Recognition using SpaCy<a class="anchor-link" href="#Name-Entity-Recognition-using-SpaCy"> </a>
+</h3>
+<p><strong>Task: From given interactive voice response identify queries &amp;  corresponding action keys.</strong><br>
+Following example will give clear idea about the task:
+<br>
+INPUT: Welcome in Airtel Customer Care!. To check your balance please press 1. to speak with our executive speak executive. for more information press three or speak more.</p>
+<p>OUPUT: <br>
+1) query : To check your balance<br>
+   interface : press<br>
+   dtmf_key : 1<br>
+<br>
+2)query: to speak with our executive<br>
+  interface : speak<br>
+  vocal_key : executive<br>
+<br>
+3)query : more information<br>
+  interface : press<br>
+  dtmf_key : three<br>
+  interface : speak<br>
+  vocal_key : more<br></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><strong>Notations :</strong></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<ul>
+<li>query: to show service or functionality</li>
+<li>interface : to denote type of action (press/enter/speak/say)</li>
+<li>dtmf_key : (0,9),('zero','nine') or # or any valid keypad key</li>
+<li>vocal_key : any word without having space</li>
+</ul>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-python"><pre><span></span><span class="kn">import</span> <span class="nn">spacy</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="n">train_path</span> <span class="o">=</span> <span class="s2">"/content/drive/MyDrive/SpaCy Project/"</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">train_path</span><span class="p">)</span>
+<span class="kn">import</span> <span class="nn">TrainingData</span>
+<span class="kn">import</span> <span class="nn">re</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Exploring-Dataset">
+<a class="anchor" href="#Exploring-Dataset" aria-hidden="true"><span class="octicon octicon-link"></span></a>Exploring Dataset<a class="anchor-link" href="#Exploring-Dataset"> </a>
+</h3>
+<ul>
+<li>The given dataset is created by ourself using GATE annotation tool.</li>
+<li>323 Paragraphs is annotated with start index &amp; end index of particular entity as below sample shows</li>
+<li><a href="https://drive.google.com/file/d/1bsXHILeV6OFoenkXb8VVe3LjDbPOh-vD/view?usp=sharing">TraingData.py</a></li>
+</ul>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-python"><pre><span></span><span class="n">TRAIN_DATA</span> <span class="o">=</span> <span class="n">TrainingData</span><span class="o">.</span><span class="n">TRAIN_DATA</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Total Paragrahs:"</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">TRAIN_DATA</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Sample Data</span><span class="se">\n</span><span class="s2">"</span><span class="p">,</span><span class="n">TRAIN_DATA</span><span class="p">[</span><span class="mi">18</span><span class="p">])</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Total Paragrahs: 323
+Sample Data
+ ("To repeat the previous order press 2 Hi bogz happy to hear from you again! If this is regarding your previous purchase football press 1 Thank you for calling The Operations Tech Company where Technology and business come together If you would like to talk to the receptionist press '0' or stay on the line and one of our friendly staff members will assist you For Sales and Marketing press '4'", {'entities': [(3, 28, 'query'), (29, 34, 'interface'), (35, 36, 'dtmf_key'), (86, 127, 'query'), (128, 133, 'interface'), (134, 135, 'dtmf_key'), (250, 275, 'query'), (276, 281, 'interface'), (282, 285, 'dtmf_key'), (364, 383, 'query'), (384, 389, 'interface'), (390, 393, 'dtmf_key')]})
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Creating-SpaCy-Model:">
+<a class="anchor" href="#Creating-SpaCy-Model:" aria-hidden="true"><span class="octicon octicon-link"></span></a>Creating SpaCy Model:<a class="anchor-link" href="#Creating-SpaCy-Model:"> </a>
+</h3>
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-python"><pre><span></span><span class="n">nlp</span> <span class="o">=</span> <span class="n">spacy</span><span class="o">.</span><span class="n">blank</span><span class="p">(</span><span class="s2">"en"</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-python"><pre><span></span><span class="n">ner</span> <span class="o">=</span> <span class="n">nlp</span><span class="o">.</span><span class="n">create_pipe</span><span class="p">(</span><span class="s2">"ner"</span><span class="p">)</span>
+<span class="n">nlp</span><span class="o">.</span><span class="n">add_pipe</span><span class="p">(</span><span class="n">ner</span><span class="p">)</span>
+
+<span class="c1"># Add Entities label </span>
+<span class="n">ner</span><span class="o">.</span><span class="n">add_label</span><span class="p">(</span><span class="s2">"dtmf_key"</span><span class="p">)</span> 
+<span class="n">ner</span><span class="o">.</span><span class="n">add_label</span><span class="p">(</span><span class="s2">"interface"</span><span class="p">)</span>
+<span class="n">ner</span><span class="o">.</span><span class="n">add_label</span><span class="p">(</span><span class="s2">"query"</span><span class="p">)</span>
+<span class="n">ner</span><span class="o">.</span><span class="n">add_label</span><span class="p">(</span><span class="s2">"vocal_key"</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Training">
+<a class="anchor" href="#Training" aria-hidden="true"><span class="octicon octicon-link"></span></a>Training<a class="anchor-link" href="#Training"> </a>
+</h3>
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-python"><pre><span></span><span class="n">nlp</span><span class="o">.</span><span class="n">begin_training</span><span class="p">()</span>
+
+<span class="c1"># Loop through iterations</span>
+<span class="n">iterations</span><span class="o">=</span><span class="mi">20</span>
+<span class="k">for</span> <span class="n">itn</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">iterations</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"#### iteration:</span><span class="si">{}</span><span class="s2"> ####"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">itn</span><span class="p">))</span>
+    <span class="c1"># Shuffle the training data</span>
+    <span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">TRAIN_DATA</span><span class="p">)</span>
+    <span class="n">losses</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="c1">#specify batch size which will increase 4.0 to 32.0 by each step</span>
+    <span class="n">batches</span> <span class="o">=</span> <span class="n">spacy</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">minibatch</span><span class="p">(</span><span class="n">TRAIN_DATA</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="n">spacy</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">compounding</span><span class="p">(</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">32.0</span><span class="p">,</span> <span class="mf">1.001</span><span class="p">))</span>
+    <span class="c1"># Batch the examples and iterate over them</span>
+    <span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">batches</span><span class="p">:</span>
+            <span class="n">texts</span><span class="p">,</span> <span class="n">annotations</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">batch</span><span class="p">)</span>
+            <span class="n">nlp</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                <span class="n">texts</span><span class="p">,</span>  <span class="c1"># batch of texts</span>
+                <span class="n">annotations</span><span class="p">,</span>  <span class="c1"># batch of annotations</span>
+                <span class="c1"># drop=0.5,  </span>
+                <span class="c1">#Drop out make it harder for model to memorize data</span>
+                <span class="n">losses</span> <span class="o">=</span> <span class="n">losses</span><span class="p">,</span>
+            <span class="p">)</span>
+  
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Losses"</span><span class="p">,</span> <span class="n">losses</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Training Complete!"</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>#### iteration:0 ####
+Losses {'ner': 4768.9891713176}
+#### iteration:1 ####
+Losses {'ner': 1486.7596520159605}
+#### iteration:2 ####
+Losses {'ner': 1074.1071048149015}
+#### iteration:3 ####
+Losses {'ner': 850.1767826321648}
+#### iteration:4 ####
+Losses {'ner': 752.1742569444432}
+#### iteration:5 ####
+Losses {'ner': 669.864118618759}
+#### iteration:6 ####
+Losses {'ner': 524.6499961741566}
+#### iteration:7 ####
+Losses {'ner': 471.66053010489964}
+#### iteration:8 ####
+Losses {'ner': 576.8265857268041}
+#### iteration:9 ####
+Losses {'ner': 514.8405227193435}
+#### iteration:10 ####
+Losses {'ner': 416.5718498184934}
+#### iteration:11 ####
+Losses {'ner': 373.2867328748377}
+#### iteration:12 ####
+Losses {'ner': 357.24039446139324}
+#### iteration:13 ####
+Losses {'ner': 274.7780986793721}
+#### iteration:14 ####
+Losses {'ner': 285.58639339756184}
+#### iteration:15 ####
+Losses {'ner': 238.52276656678885}
+#### iteration:16 ####
+Losses {'ner': 213.5858629838169}
+#### iteration:17 ####
+Losses {'ner': 268.84617166230623}
+#### iteration:18 ####
+Losses {'ner': 288.95139569898976}
+#### iteration:19 ####
+Losses {'ner': 201.44840153135783}
+Training Complete!
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Testing">
+<a class="anchor" href="#Testing" aria-hidden="true"><span class="octicon octicon-link"></span></a>Testing<a class="anchor-link" href="#Testing"> </a>
+</h3>
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-python"><pre><span></span><span class="n">test_para</span> <span class="o">=</span> <span class="s1">'''</span>
+<span class="s1">Welcome in Airtel Customer Care!.</span>
+<span class="s1">To check your balance please press 1.</span>
+<span class="s1">to speak with our executive speak executive.</span>
+<span class="s1">for more information press three or speak more.</span>
+<span class="s1">Have a good day!</span>
+<span class="s1">'''</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-python"><pre><span></span><span class="n">lines</span> <span class="o">=</span> <span class="n">test_para</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">'.'</span><span class="p">)</span>
+<span class="n">test_lines</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+  <span class="c1">#remove new line, ", ' characters</span>
+  <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">"[\n</span><span class="se">\"</span><span class="s2">\']"</span><span class="p">,</span><span class="s1">''</span><span class="p">,</span><span class="n">line</span><span class="p">)</span>
+  <span class="n">test_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+<span class="n">test_lines</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>['Welcome in Airtel Customer Care!',
+ 'To check your balance please press 1',
+ 'to speak with our executive speak executive',
+ 'for more information press three or speak more',
+ 'Have a good day!']</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-python"><pre><span></span><span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">test_lines</span><span class="p">:</span>
+  <span class="c1">#pass in model</span>
+  <span class="n">doc</span> <span class="o">=</span> <span class="n">nlp</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+  <span class="nb">print</span><span class="p">(</span><span class="s2">"INPUT:"</span><span class="p">,</span><span class="n">line</span><span class="p">)</span>
+  <span class="nb">print</span><span class="p">(</span><span class="s2">"OUTPUT:"</span><span class="p">)</span>
+  <span class="c1">#extract entities</span>
+  <span class="k">for</span> <span class="n">entity</span> <span class="ow">in</span> <span class="n">doc</span><span class="o">.</span><span class="n">ents</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">entity</span><span class="o">.</span><span class="n">label_</span><span class="si">}</span><span class="s2"> : </span><span class="si">{</span><span class="n">entity</span><span class="o">.</span><span class="n">text</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+  <span class="nb">print</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>INPUT: Welcome in Airtel Customer Care!
+OUTPUT:
+
+INPUT: To check your balance please press 1
+OUTPUT:
+query : check your balance
+interface : press
+dtmf_key : 1
+
+INPUT: to speak with our executive speak executive
+OUTPUT:
+query : speak with our executive
+interface : speak
+vocal_key : executive
+
+INPUT: for more information press three or speak more
+OUTPUT:
+query : more information
+interface : press
+dtmf_key : three
+interface : speak
+vocal_key : more
+
+INPUT: Have a good day!
+OUTPUT:
+
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+</div>
+
+
+
+  </div><!-- from https://github.com/utterance/utterances -->
+<script src="https://utteranc.es/client.js"
+        repo="karm216/Fastpages-Notebooks"
+        issue-term="title"
+        label="blogpost-comment"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script><a class="u-url" href="/Fastpages-Notebooks/fastpages/jupyter/2020/09/10/NER-with-Spacy.html" hidden></a>
+</article>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/Fastpages-Notebooks/"></data>
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col">
+        <p class="feed-subscribe">
+          <a href="/Fastpages-Notebooks/feed.xml">
+            <svg class="svg-icon orange">
+              <use xlink:href="/Fastpages-Notebooks/assets/minima-social-icons.svg#rss"></use>
+            </svg><span>Subscribe</span>
+          </a>
+        </p>
+      </div>
+      <div class="footer-col">
+        <p>An easy to use blogging platform with support for Jupyter Notebooks.</p>
+      </div>
+    </div>
+
+    <div class="social-links"><ul class="social-media-list"><li><a rel="me" href="https://github.com/karm216" title="karm216"><svg class="svg-icon grey"><use xlink:href="/Fastpages-Notebooks/assets/minima-social-icons.svg#github"></use></svg></a></li><li><a rel="me" href="https://twitter.com/KarmKinetic" title="KarmKinetic"><svg class="svg-icon grey"><use xlink:href="/Fastpages-Notebooks/assets/minima-social-icons.svg#twitter"></use></svg></a></li></ul>
+</div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
