@@ -1,0 +1,1765 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="twitter:card" content="summary_large_image" /><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Quora Questions Pairs using BERT | Karm’s Blogs</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="Quora Questions Pairs using BERT" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Task: Identify wether two question have similar context/meaning or not" />
+<meta property="og:description" content="Task: Identify wether two question have similar context/meaning or not" />
+<link rel="canonical" href="https://karm216.github.io/Fastpages-Notebooks/fastpages/jupyter/2021/04/18/Quora-Questions-Pairs.html" />
+<meta property="og:url" content="https://karm216.github.io/Fastpages-Notebooks/fastpages/jupyter/2021/04/18/Quora-Questions-Pairs.html" />
+<meta property="og:site_name" content="Karm’s Blogs" />
+<meta property="og:image" content="https://karm216.github.io/Fastpages-Notebooks/images/some_folder/your_image.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-04-18T00:00:00-05:00" />
+<script type="application/ld+json">
+{"description":"Task: Identify wether two question have similar context/meaning or not","url":"https://karm216.github.io/Fastpages-Notebooks/fastpages/jupyter/2021/04/18/Quora-Questions-Pairs.html","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://karm216.github.io/Fastpages-Notebooks/fastpages/jupyter/2021/04/18/Quora-Questions-Pairs.html"},"headline":"Quora Questions Pairs using BERT","dateModified":"2021-04-18T00:00:00-05:00","datePublished":"2021-04-18T00:00:00-05:00","image":"https://karm216.github.io/Fastpages-Notebooks/images/some_folder/your_image.png","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/Fastpages-Notebooks/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://karm216.github.io/Fastpages-Notebooks/feed.xml" title="Karm's Blogs" /><link rel="shortcut icon" type="image/x-icon" href="/Fastpages-Notebooks/images/favicon.ico"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Primer/15.2.0/primer.css" integrity="sha512-xTz2ys4coGAOz8vuV1NcQBkgVmKhsSEtjbqyMJbBHRplFuvKIUo6xhLHpAyPt9mfR6twHJgn9OgVLuqOvjeBhg==" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css" integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog==" crossorigin="anonymous" />
+
+<script>
+function wrap_img(fn) {
+    if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading") {
+        var elements = document.querySelectorAll(".post img");
+        Array.prototype.forEach.call(elements, function(el, i) {
+            if (el.getAttribute("title") && (el.className != "emoji")) {
+                const caption = document.createElement('figcaption');
+                var node = document.createTextNode(el.getAttribute("title"));
+                caption.appendChild(node);
+                const wrapper = document.createElement('figure');
+                wrapper.className = 'image';
+                el.parentNode.insertBefore(wrapper, el);
+                el.parentNode.removeChild(el);
+                wrapper.appendChild(el);
+                wrapper.appendChild(caption);
+            }
+        });
+    } else { document.addEventListener('DOMContentLoaded', fn); }
+}
+window.onload = wrap_img;
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+    // add link icon to anchor tags
+    var elem = document.querySelectorAll(".anchor-link")
+    elem.forEach(e => (e.innerHTML = '<i class="fas fa-link fa-xs"></i>'));
+    });
+</script>
+</head>
+<body><header class="site-header">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/Fastpages-Notebooks/">Karm&#39;s Blogs</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/Fastpages-Notebooks/about/">About Me</a><a class="page-link" href="/Fastpages-Notebooks/search/">Search</a><a class="page-link" href="/Fastpages-Notebooks/categories/">Tags</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Quora Questions Pairs using BERT</h1><p class="page-description">Task: Identify wether two question have similar context/meaning or not</p><p class="post-meta post-meta-title"><time class="dt-published" datetime="2021-04-18T00:00:00-05:00" itemprop="datePublished">
+        Apr 18, 2021
+      </time>
+       • <span class="read-time" title="Estimated read time">
+    
+    
+      11 min read
+    
+</span></p>
+
+    
+      <p class="category-tags"><i class="fas fa-tags category-tags-icon"></i></i> 
+      
+        <a class="category-tags-link" href="/Fastpages-Notebooks/categories/#fastpages">fastpages</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/Fastpages-Notebooks/categories/#jupyter">jupyter</a>
+        
+      
+      </p>
+    
+
+    
+      
+        <div class="pb-5 d-flex flex-wrap flex-justify-end">
+          <div class="px-2">
+
+    <a href="https://github.com/karm216/Fastpages-Notebooks/tree/master/_notebooks/2021-04-18-Quora Questions Pairs.ipynb" role="button" target="_blank">
+<img class="notebook-badge-image" src="/Fastpages-Notebooks/assets/badges/github.svg" alt="View On GitHub">
+    </a>
+</div>
+
+          <div class="px-2">
+    <a href="https://mybinder.org/v2/gh/karm216/Fastpages-Notebooks/master?filepath=_notebooks%2F2021-04-18-Quora+Questions+Pairs.ipynb" target="_blank">
+        <img class="notebook-badge-image" src="/Fastpages-Notebooks/assets/badges/binder.svg" alt="Open In Binder"/>
+    </a>
+</div>
+
+          <div class="px-2">
+    <a href="https://colab.research.google.com/github/karm216/Fastpages-Notebooks/blob/master/_notebooks/2021-04-18-Quora Questions Pairs.ipynb" target="_blank">
+        <img class="notebook-badge-image" src="/Fastpages-Notebooks/assets/badges/colab.svg" alt="Open In Colab"/>
+    </a>
+</div>
+        </div>
+      </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <ul class="section-nav">
+<li class="toc-entry toc-h3"><a href="#Quora-Questions-Pairs-using-BERT-:-Overview">Quora Questions Pairs using BERT : Overview </a></li>
+<li class="toc-entry toc-h3"><a href="#1)Naive-Bayes-Classifier">1)Naive Bayes Classifier </a>
+<ul>
+<li class="toc-entry toc-h4"><a href="#Text-Preprocessing">Text Preprocessing </a></li>
+<li class="toc-entry toc-h4"><a href="#Convert-Words-into-Vector">Convert Words into Vector </a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h3"><a href="#2)BERT">2)BERT </a>
+<ul>
+<li class="toc-entry toc-h4"><a href="#Preprocessing">Preprocessing </a></li>
+<li class="toc-entry toc-h4"><a href="#Custom-Data-Generator">Custom Data Generator </a></li>
+<li class="toc-entry toc-h4"><a href="#Build-The-Model">Build The Model </a></li>
+<li class="toc-entry toc-h4"><a href="#Create-train-and-validation-data-generators">Create train and validation data generators </a></li>
+<li class="toc-entry toc-h4"><a href="#Train-the-model">Train the model </a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h3"><a href="#Fine-Tuning">Fine Tuning </a></li>
+<li class="toc-entry toc-h3"><a href="#Evaluate-on-Test-Dataset">Evaluate on Test Dataset </a>
+<ul>
+<li class="toc-entry toc-h4"><a href="#Try-the-custom-Questions">Try the custom Questions </a></li>
+</ul>
+</li>
+</ul><!--
+#################################################
+### THIS FILE WAS AUTOGENERATED! DO NOT EDIT! ###
+#################################################
+# file to edit: _notebooks/2021-04-18-Quora Questions Pairs.ipynb
+-->
+
+<div class="container" id="notebook-container">
+        
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Quora-Questions-Pairs-using-BERT-:-Overview">
+<a class="anchor" href="#Quora-Questions-Pairs-using-BERT-:-Overview" aria-hidden="true"><span class="octicon octicon-link"></span></a>Quora Questions Pairs using BERT : Overview<a class="anchor-link" href="#Quora-Questions-Pairs-using-BERT-:-Overview"> </a>
+</h3>
+<p><strong>Task: Identify wether two question have similar context/meaning or not</strong><br>
+<a href="https://www.kaggle.com/c/quora-question-pairs/overview">kaggle</a>
+<br>
+I have tried this problem using two different approach</p>
+<ol>
+<li>Using Naive Bayes Classifier</li>
+<li>Using BERT</li>
+</ol>
+<h3 id="1)Naive-Bayes-Classifier">
+<a class="anchor" href="#1)Naive-Bayes-Classifier" aria-hidden="true"><span class="octicon octicon-link"></span></a>1)Naive Bayes Classifier<a class="anchor-link" href="#1)Naive-Bayes-Classifier"> </a>
+</h3>
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-python"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">nltk</span>
+<span class="kn">from</span> <span class="nn">nltk.stem</span> <span class="kn">import</span> <span class="n">WordNetLemmatizer</span><span class="p">,</span> <span class="n">PorterStemmer</span>
+<span class="kn">from</span> <span class="nn">sklearn.feature_extraction.text</span> <span class="kn">import</span> <span class="n">CountVectorizer</span><span class="p">,</span> <span class="n">TfidfVectorizer</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">nltk.corpus</span> <span class="kn">import</span> <span class="n">stopwords</span>
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span>
+<span class="kn">from</span> <span class="nn">sklearn.naive_bayes</span> <span class="kn">import</span> <span class="n">MultinomialNB</span>
+<span class="n">path</span> <span class="o">=</span> <span class="s2">"/content/drive/MyDrive/Quora Questions NLP"</span>
+<span class="n">nltk</span><span class="o">.</span><span class="n">download</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-python"><pre><span></span><span class="n">train</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">path</span><span class="o">+</span><span class="s2">"/train.csv"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Total samples:"</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">train</span><span class="p">))</span>
+<span class="n">train</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Total samples: 404290
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>id</th>
+      <th>qid1</th>
+      <th>qid2</th>
+      <th>question1</th>
+      <th>question2</th>
+      <th>is_duplicate</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0</td>
+      <td>1</td>
+      <td>2</td>
+      <td>What is the step by step guide to invest in sh...</td>
+      <td>What is the step by step guide to invest in sh...</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1</td>
+      <td>3</td>
+      <td>4</td>
+      <td>What is the story of Kohinoor (Koh-i-Noor) Dia...</td>
+      <td>What would happen if the Indian government sto...</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2</td>
+      <td>5</td>
+      <td>6</td>
+      <td>How can I increase the speed of my internet co...</td>
+      <td>How can Internet speed be increased by hacking...</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>3</td>
+      <td>7</td>
+      <td>8</td>
+      <td>Why am I mentally very lonely? How can I solve...</td>
+      <td>Find the remainder when [math]23^{24}[/math] i...</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>4</td>
+      <td>9</td>
+      <td>10</td>
+      <td>Which one dissolve in water quikly sugar, salt...</td>
+      <td>Which fish would survive in salt water?</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>5</td>
+      <td>11</td>
+      <td>12</td>
+      <td>Astrology: I am a Capricorn Sun Cap moon and c...</td>
+      <td>I'm a triple Capricorn (Sun, Moon and ascendan...</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>6</td>
+      <td>13</td>
+      <td>14</td>
+      <td>Should I buy tiago?</td>
+      <td>What keeps childern active and far from phone ...</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>7</td>
+      <td>15</td>
+      <td>16</td>
+      <td>How can I be a good geologist?</td>
+      <td>What should I do to be a great geologist?</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>8</td>
+      <td>17</td>
+      <td>18</td>
+      <td>When do you use シ instead of し?</td>
+      <td>When do you use "&amp;" instead of "and"?</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>9</td>
+      <td>19</td>
+      <td>20</td>
+      <td>Motorola (company): Can I hack my Charter Moto...</td>
+      <td>How do I hack Motorola DCX3400 for free internet?</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-python"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">train</span><span class="o">.</span><span class="n">isnull</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+<span class="n">train</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>id              0
+qid1            0
+qid2            0
+question1       1
+question2       2
+is_duplicate    0
+dtype: int64
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Text-Preprocessing">
+<a class="anchor" href="#Text-Preprocessing" aria-hidden="true"><span class="octicon octicon-link"></span></a>Text Preprocessing<a class="anchor-link" href="#Text-Preprocessing"> </a>
+</h4>
+<ul>
+<li>Remove stop words</li>
+<li>Lemmatize </li>
+</ul>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-python"><pre><span></span><span class="k">def</span> <span class="nf">preprocess</span><span class="p">(</span><span class="n">series</span><span class="p">):</span>
+  <span class="c1">#remove characters other than alphabets &amp; numerics</span>
+  <span class="n">words</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">"[^A-Za-z0-9]"</span><span class="p">,</span><span class="s2">" "</span><span class="p">,</span><span class="n">series</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+
+  <span class="c1">#lemmatize words</span>
+  <span class="n">lemm</span> <span class="o">=</span> <span class="n">WordNetLemmatizer</span><span class="p">()</span>
+  <span class="n">stpwords</span> <span class="o">=</span> <span class="n">stopwords</span><span class="o">.</span><span class="n">words</span><span class="p">(</span><span class="s1">'english'</span><span class="p">)</span>
+  <span class="n">lemmitized</span> <span class="o">=</span> <span class="p">[</span><span class="n">lemm</span><span class="o">.</span><span class="n">lemmatize</span><span class="p">(</span><span class="n">word</span><span class="p">)</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">words</span> <span class="k">if</span> <span class="n">word</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">stpwords</span><span class="p">]</span>
+  <span class="n">sent</span> <span class="o">=</span> <span class="s1">' '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lemmitized</span><span class="p">)</span>
+  <span class="k">return</span> <span class="n">sent</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-python"><pre><span></span><span class="n">train</span><span class="p">[</span><span class="s1">'question1'</span><span class="p">]</span> <span class="o">=</span><span class="n">train</span><span class="p">[</span><span class="s1">'question1'</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">preprocess</span><span class="p">)</span>
+<span class="n">train</span><span class="p">[</span><span class="s1">'question2'</span><span class="p">]</span> <span class="o">=</span><span class="n">train</span><span class="p">[</span><span class="s1">'question2'</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">preprocess</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-python"><pre><span></span><span class="k">def</span> <span class="nf">concat</span><span class="p">(</span><span class="n">ser</span><span class="p">):</span>
+  <span class="nb">print</span><span class="p">(</span><span class="n">ser</span><span class="p">[</span><span class="s1">'question1'</span><span class="p">])</span>
+  <span class="k">return</span> <span class="mi">1</span>
+<span class="n">train</span><span class="p">[</span><span class="s1">'combine'</span><span class="p">]</span> <span class="o">=</span> <span class="n">train</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">ser</span><span class="p">:</span> <span class="n">ser</span><span class="p">[</span><span class="s1">'question1'</span><span class="p">]</span> <span class="o">+</span> <span class="s2">" "</span> <span class="o">+</span> <span class="n">ser</span><span class="p">[</span><span class="s1">'question2'</span><span class="p">],</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">train</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>id</th>
+      <th>qid1</th>
+      <th>qid2</th>
+      <th>question1</th>
+      <th>question2</th>
+      <th>is_duplicate</th>
+      <th>combine</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0</td>
+      <td>1</td>
+      <td>2</td>
+      <td>What is the step by step guide to invest in sh...</td>
+      <td>What is the step by step guide to invest in sh...</td>
+      <td>0</td>
+      <td>What is the step by step guide to invest in sh...</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1</td>
+      <td>3</td>
+      <td>4</td>
+      <td>What is the story of Kohinoor (Koh-i-Noor) Dia...</td>
+      <td>What would happen if the Indian government sto...</td>
+      <td>0</td>
+      <td>What is the story of Kohinoor (Koh-i-Noor) Dia...</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2</td>
+      <td>5</td>
+      <td>6</td>
+      <td>How can I increase the speed of my internet co...</td>
+      <td>How can Internet speed be increased by hacking...</td>
+      <td>0</td>
+      <td>How can I increase the speed of my internet co...</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>3</td>
+      <td>7</td>
+      <td>8</td>
+      <td>Why am I mentally very lonely? How can I solve...</td>
+      <td>Find the remainder when [math]23^{24}[/math] i...</td>
+      <td>0</td>
+      <td>Why am I mentally very lonely? How can I solve...</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>4</td>
+      <td>9</td>
+      <td>10</td>
+      <td>Which one dissolve in water quikly sugar, salt...</td>
+      <td>Which fish would survive in salt water?</td>
+      <td>0</td>
+      <td>Which one dissolve in water quikly sugar, salt...</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>5</td>
+      <td>11</td>
+      <td>12</td>
+      <td>Astrology: I am a Capricorn Sun Cap moon and c...</td>
+      <td>I'm a triple Capricorn (Sun, Moon and ascendan...</td>
+      <td>1</td>
+      <td>Astrology: I am a Capricorn Sun Cap moon and c...</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>6</td>
+      <td>13</td>
+      <td>14</td>
+      <td>Should I buy tiago?</td>
+      <td>What keeps childern active and far from phone ...</td>
+      <td>0</td>
+      <td>Should I buy tiago? What keeps childern active...</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>7</td>
+      <td>15</td>
+      <td>16</td>
+      <td>How can I be a good geologist?</td>
+      <td>What should I do to be a great geologist?</td>
+      <td>1</td>
+      <td>How can I be a good geologist? What should I d...</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>8</td>
+      <td>17</td>
+      <td>18</td>
+      <td>When do you use シ instead of し?</td>
+      <td>When do you use "&amp;" instead of "and"?</td>
+      <td>0</td>
+      <td>When do you use シ instead of し? When do you us...</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>9</td>
+      <td>19</td>
+      <td>20</td>
+      <td>Motorola (company): Can I hack my Charter Moto...</td>
+      <td>How do I hack Motorola DCX3400 for free internet?</td>
+      <td>0</td>
+      <td>Motorola (company): Can I hack my Charter Moto...</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Convert-Words-into-Vector">
+<a class="anchor" href="#Convert-Words-into-Vector" aria-hidden="true"><span class="octicon octicon-link"></span></a>Convert Words into Vector<a class="anchor-link" href="#Convert-Words-into-Vector"> </a>
+</h4>
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-python"><pre><span></span><span class="n">cv</span> <span class="o">=</span> <span class="n">TfidfVectorizer</span><span class="p">(</span><span class="n">max_features</span><span class="o">=</span><span class="mi">50000</span><span class="p">)</span>
+
+<span class="c1">#Take combine questions data as X</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">train</span><span class="p">[</span><span class="s1">'combine'</span><span class="p">])</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">train</span><span class="p">[</span><span class="s1">'is_duplicate'</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+<span class="c1">#Tarin-Test Spilt</span>
+<span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">test_size</span><span class="o">=</span><span class="mf">0.05</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">X_train</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span><span class="n">X_test</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>(404287, 50000)
+(384072, 50000) (20215, 50000)
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-python"><pre><span></span><span class="n">naive_model</span> <span class="o">=</span> <span class="n">MultinomialNB</span><span class="p">()</span>
+<span class="n">naive_model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span><span class="n">y_train</span><span class="p">)</span>
+
+<span class="c1">#Predictions</span>
+<span class="n">y_pred_train</span> <span class="o">=</span> <span class="n">naive_model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_train</span><span class="p">)</span>
+<span class="n">y_pred_test</span> <span class="o">=</span> <span class="n">naive_model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-python"><pre><span></span><span class="n">accuracy_train</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">((</span><span class="n">y_pred_train</span> <span class="o">==</span> <span class="n">y_train</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">))</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">y_train</span><span class="p">)</span>
+<span class="n">accuracy_test</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">((</span><span class="n">y_pred_test</span> <span class="o">==</span> <span class="n">y_test</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">))</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">y_test</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">accuracy_train</span><span class="p">,</span><span class="n">accuracy_test</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>0.7558140140390344 0.7431610190452634
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We got 74% Accuracy which is very bad for binary classification problem</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="2)BERT">
+<a class="anchor" href="#2)BERT" aria-hidden="true"><span class="octicon octicon-link"></span></a>2)BERT<a class="anchor-link" href="#2)BERT"> </a>
+</h3>
+<p>I have used "Semantic Similarity with BERT" code to solve this problem.<br>
+reference : <a href="https://keras.io/examples/nlp/semantic_similarity_with_bert/">https://keras.io/examples/nlp/semantic_similarity_with_bert/</a></p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-python"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
+<span class="err">!</span><span class="n">pip</span> <span class="n">install</span> <span class="n">transformers</span><span class="o">==</span><span class="mf">2.11</span><span class="o">.</span><span class="mi">0</span>
+<span class="kn">import</span> <span class="nn">transformers</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-python"><pre><span></span><span class="n">max_length</span> <span class="o">=</span> <span class="mi">128</span>  <span class="c1"># Maximum length of input sentence to the model.</span>
+<span class="n">batch_size</span> <span class="o">=</span> <span class="mi">32</span>
+<span class="n">epochs</span> <span class="o">=</span> <span class="mi">2</span>
+
+<span class="c1"># Labels in our dataset.</span>
+<span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+<span class="c1">#1 : Non Duplicate</span>
+<span class="c1">#0 : Duplicate</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">path</span><span class="o">+</span><span class="s2">"/train.csv"</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Preprocessing">
+<a class="anchor" href="#Preprocessing" aria-hidden="true"><span class="octicon octicon-link"></span></a>Preprocessing<a class="anchor-link" href="#Preprocessing"> </a>
+</h4>
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-python"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">isnull</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+<span class="n">df</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>id              0
+qid1            0
+qid2            0
+question1       1
+question2       2
+is_duplicate    0
+dtype: int64
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-python"><pre><span></span><span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">))</span> <span class="o">&lt;</span> <span class="mf">0.7</span>
+<span class="n">train_df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+<span class="n">not_train</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="o">~</span><span class="n">mask</span><span class="p">]</span>
+
+<span class="c1">#create mask for val-test distribution</span>
+<span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">not_train</span><span class="p">))</span> <span class="o">&lt;</span> <span class="mf">0.5</span>
+<span class="n">test_df</span> <span class="o">=</span> <span class="n">not_train</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+<span class="n">val_df</span> <span class="o">=</span> <span class="n">not_train</span><span class="p">[</span><span class="o">~</span><span class="n">mask</span><span class="p">]</span>
+<span class="n">val_df</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>id</th>
+      <th>qid1</th>
+      <th>qid2</th>
+      <th>question1</th>
+      <th>question2</th>
+      <th>is_duplicate</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>1</th>
+      <td>1</td>
+      <td>3</td>
+      <td>4</td>
+      <td>What is the story of Kohinoor (Koh-i-Noor) Dia...</td>
+      <td>What would happen if the Indian government sto...</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>10</td>
+      <td>21</td>
+      <td>22</td>
+      <td>Method to find separation of slits using fresn...</td>
+      <td>What are some of the things technicians can te...</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>39</th>
+      <td>39</td>
+      <td>79</td>
+      <td>80</td>
+      <td>What is the stall speed and AOA of an f-14 wit...</td>
+      <td>Why did aircraft stop using variable-sweep win...</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>63</th>
+      <td>63</td>
+      <td>127</td>
+      <td>128</td>
+      <td>Why do I always get depressed?</td>
+      <td>Why do I always get depressed in the evening?</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>64</th>
+      <td>64</td>
+      <td>129</td>
+      <td>130</td>
+      <td>Where can I find a European family office data...</td>
+      <td>Where do I find a U.S. family office database?</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-python"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Total train samples : </span><span class="si">{</span><span class="n">train_df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Total validation samples: </span><span class="si">{</span><span class="n">val_df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Total test samples: </span><span class="si">{</span><span class="n">test_df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Total train samples : 282550
+Total validation samples: 60634
+Total test samples: 61103
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-python"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">"Train Target Distribution"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">train_df</span><span class="o">.</span><span class="n">is_duplicate</span><span class="o">.</span><span class="n">value_counts</span><span class="p">())</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Validation Target Distribution"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">val_df</span><span class="o">.</span><span class="n">is_duplicate</span><span class="o">.</span><span class="n">value_counts</span><span class="p">())</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Train Target Distribution
+0    178627
+1    103923
+Name: is_duplicate, dtype: int64
+Validation Target Distribution
+0    38030
+1    22604
+Name: is_duplicate, dtype: int64
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-python"><pre><span></span><span class="n">y_train</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">to_categorical</span><span class="p">(</span><span class="n">train_df</span><span class="o">.</span><span class="n">is_duplicate</span><span class="p">,</span> <span class="n">num_classes</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"y_train.shape:</span><span class="si">{</span><span class="n">y_train</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+<span class="n">y_val</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">to_categorical</span><span class="p">(</span><span class="n">val_df</span><span class="o">.</span><span class="n">is_duplicate</span><span class="p">,</span> <span class="n">num_classes</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"y_val.shape:</span><span class="si">{</span><span class="n">y_val</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+<span class="n">y_test</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">to_categorical</span><span class="p">(</span><span class="n">test_df</span><span class="o">.</span><span class="n">is_duplicate</span><span class="p">,</span> <span class="n">num_classes</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"y_test.shape:</span><span class="si">{</span><span class="n">y_test</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>y_train.shape:(282550, 2)
+y_val.shape:(60634, 2)
+y_test.shape:(61103, 2)
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Custom-Data-Generator">
+<a class="anchor" href="#Custom-Data-Generator" aria-hidden="true"><span class="octicon octicon-link"></span></a>Custom Data Generator<a class="anchor-link" href="#Custom-Data-Generator"> </a>
+</h4>
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-python"><pre><span></span><span class="k">class</span> <span class="nc">BertSemanticDataGenerator</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">Sequence</span><span class="p">):</span>
+    <span class="sd">"""Generates batches of data.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        sentence_pairs: Array of premise and hypothesis input sentences.</span>
+<span class="sd">        labels: Array of labels.</span>
+<span class="sd">        batch_size: Integer batch size.</span>
+<span class="sd">        shuffle: boolean, whether to shuffle the data.</span>
+<span class="sd">        include_targets: boolean, whether to incude the labels.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Tuples `([input_ids, attention_mask, `token_type_ids], labels)`</span>
+<span class="sd">        (or just `[input_ids, attention_mask, `token_type_ids]`</span>
+<span class="sd">         if `include_targets=False`)</span>
+<span class="sd">    """</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">sentence_pairs</span><span class="p">,</span>
+        <span class="n">labels</span><span class="p">,</span>
+        <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span>
+        <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">include_targets</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sentence_pairs</span> <span class="o">=</span> <span class="n">sentence_pairs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">labels</span> <span class="o">=</span> <span class="n">labels</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shuffle</span> <span class="o">=</span> <span class="n">shuffle</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">=</span> <span class="n">batch_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">include_targets</span> <span class="o">=</span> <span class="n">include_targets</span>
+        
+        <span class="c1"># Load our BERT Tokenizer to encode the text.</span>
+        <span class="c1"># We will use base-base-uncased pretrained model.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">transformers</span><span class="o">.</span><span class="n">BertTokenizer</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span>
+            <span class="s2">"bert-base-uncased"</span><span class="p">,</span> <span class="n">do_lower_case</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">indexes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sentence_pairs</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">on_epoch_end</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Denotes the number of batches per epoch.</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sentence_pairs</span><span class="p">)</span> <span class="o">//</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span>
+
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
+        <span class="c1"># Retrieves the batch of index.</span>
+        <span class="n">indexes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">indexes</span><span class="p">[</span><span class="n">idx</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span> <span class="p">:</span> <span class="p">(</span><span class="n">idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">]</span>
+        <span class="n">sentence_pairs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sentence_pairs</span><span class="p">[</span><span class="n">indexes</span><span class="p">]</span>
+
+        <span class="c1"># With BERT tokenizer's batch_encode_plus batch of both the sentences are</span>
+        <span class="c1"># encoded together and separated by [SEP] token.</span>
+        <span class="n">encoded</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tokenizer</span><span class="o">.</span><span class="n">batch_encode_plus</span><span class="p">(</span>
+            <span class="n">sentence_pairs</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
+            <span class="n">add_special_tokens</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">max_length</span><span class="o">=</span><span class="n">max_length</span><span class="p">,</span>
+            <span class="n">return_attention_mask</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">return_token_type_ids</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">pad_to_max_length</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">return_tensors</span><span class="o">=</span><span class="s2">"tf"</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Convert batch of encoded features to numpy array.</span>
+        <span class="n">input_ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">encoded</span><span class="p">[</span><span class="s2">"input_ids"</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">"int32"</span><span class="p">)</span>
+        <span class="n">attention_masks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">encoded</span><span class="p">[</span><span class="s2">"attention_mask"</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">"int32"</span><span class="p">)</span>
+        <span class="n">token_type_ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">encoded</span><span class="p">[</span><span class="s2">"token_type_ids"</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">"int32"</span><span class="p">)</span>
+
+        <span class="c1"># Set to true if data generator is used for training/validation.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">include_targets</span><span class="p">:</span>
+            <span class="n">labels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">[</span><span class="n">indexes</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">"int32"</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">input_ids</span><span class="p">,</span> <span class="n">attention_masks</span><span class="p">,</span> <span class="n">token_type_ids</span><span class="p">],</span> <span class="n">labels</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">input_ids</span><span class="p">,</span> <span class="n">attention_masks</span><span class="p">,</span> <span class="n">token_type_ids</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">on_epoch_end</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Shuffle indexes after each epoch if shuffle is set to True.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">shuffle</span><span class="p">:</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indexes</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Build-The-Model">
+<a class="anchor" href="#Build-The-Model" aria-hidden="true"><span class="octicon octicon-link"></span></a>Build The Model<a class="anchor-link" href="#Build-The-Model"> </a>
+</h4>
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-python"><pre><span></span><span class="n">strategy</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">distribute</span><span class="o">.</span><span class="n">MirroredStrategy</span><span class="p">()</span>
+
+<span class="k">with</span> <span class="n">strategy</span><span class="o">.</span><span class="n">scope</span><span class="p">():</span>
+    <span class="c1"># Encoded token ids from BERT tokenizer.</span>
+    <span class="n">input_ids</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Input</span><span class="p">(</span>
+        <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">max_length</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"input_ids"</span>
+    <span class="p">)</span>
+    <span class="c1"># Attention masks indicates to the model which tokens should be attended to.</span>
+    <span class="n">attention_masks</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Input</span><span class="p">(</span>
+        <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">max_length</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"attention_masks"</span>
+    <span class="p">)</span>
+    <span class="c1"># Token type ids are binary masks identifying different sequences in the model.</span>
+    <span class="n">token_type_ids</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Input</span><span class="p">(</span>
+        <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">max_length</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"token_type_ids"</span>
+    <span class="p">)</span>
+    <span class="c1"># Loading pretrained BERT model.</span>
+    <span class="n">bert_model</span> <span class="o">=</span> <span class="n">transformers</span><span class="o">.</span><span class="n">TFBertModel</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s2">"bert-base-uncased"</span><span class="p">)</span>
+    <span class="c1"># Freeze the BERT model to reuse the pretrained features without modifying them.</span>
+    <span class="n">bert_model</span><span class="o">.</span><span class="n">trainable</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="n">sequence_output</span><span class="p">,</span> <span class="n">pooled_output</span> <span class="o">=</span> <span class="n">bert_model</span><span class="p">(</span>
+        <span class="n">input_ids</span><span class="p">,</span> <span class="n">attention_mask</span><span class="o">=</span><span class="n">attention_masks</span><span class="p">,</span> <span class="n">token_type_ids</span><span class="o">=</span><span class="n">token_type_ids</span>
+    <span class="p">)</span>
+    <span class="c1"># Add trainable layers on top of frozen layers to adapt the pretrained features on the new data.</span>
+    <span class="n">bi_lstm</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Bidirectional</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">LSTM</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="n">return_sequences</span><span class="o">=</span><span class="kc">True</span><span class="p">))(</span><span class="n">sequence_output</span><span class="p">)</span>
+    
+    <span class="c1"># Applying hybrid pooling approach to bi_lstm sequence output.</span>
+    <span class="n">avg_pool</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">GlobalAveragePooling1D</span><span class="p">()(</span><span class="n">bi_lstm</span><span class="p">)</span>
+    <span class="n">max_pool</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">GlobalMaxPooling1D</span><span class="p">()(</span><span class="n">bi_lstm</span><span class="p">)</span>
+    <span class="n">concat</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">avg_pool</span><span class="p">,</span> <span class="n">max_pool</span><span class="p">])</span>
+    <span class="n">dropout</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.3</span><span class="p">)(</span><span class="n">concat</span><span class="p">)</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s2">"softmax"</span><span class="p">)(</span><span class="n">dropout</span><span class="p">)</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">(</span>
+        <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">input_ids</span><span class="p">,</span> <span class="n">attention_masks</span><span class="p">,</span> <span class="n">token_type_ids</span><span class="p">],</span> <span class="n">outputs</span><span class="o">=</span><span class="n">output</span>
+    <span class="p">)</span>
+
+    <span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+        <span class="n">optimizer</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">optimizers</span><span class="o">.</span><span class="n">Adam</span><span class="p">(),</span>
+        <span class="n">loss</span><span class="o">=</span><span class="s2">"categorical_crossentropy"</span><span class="p">,</span>
+        <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="s2">"acc"</span><span class="p">],</span>
+    <span class="p">)</span>
+
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Strategy: </span><span class="si">{</span><span class="n">strategy</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">summary</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>WARNING:tensorflow:There are non-GPU devices in `tf.distribute.Strategy`, not using nccl allreduce.
+INFO:tensorflow:Using MirroredStrategy with devices ('/job:localhost/replica:0/task:0/device:CPU:0',)
+Strategy: &lt;tensorflow.python.distribute.mirrored_strategy.MirroredStrategy object at 0x7fa42b661090&gt;
+Model: "model_1"
+__________________________________________________________________________________________________
+Layer (type)                    Output Shape         Param #     Connected to                     
+==================================================================================================
+input_ids (InputLayer)          [(None, 128)]        0                                            
+__________________________________________________________________________________________________
+attention_masks (InputLayer)    [(None, 128)]        0                                            
+__________________________________________________________________________________________________
+token_type_ids (InputLayer)     [(None, 128)]        0                                            
+__________________________________________________________________________________________________
+tf_bert_model_1 (TFBertModel)   ((None, 128, 768), ( 109482240   input_ids[0][0]                  
+                                                                 attention_masks[0][0]            
+                                                                 token_type_ids[0][0]             
+__________________________________________________________________________________________________
+bidirectional_1 (Bidirectional) (None, 128, 128)     426496      tf_bert_model_1[0][0]            
+__________________________________________________________________________________________________
+global_average_pooling1d_1 (Glo (None, 128)          0           bidirectional_1[0][0]            
+__________________________________________________________________________________________________
+global_max_pooling1d_1 (GlobalM (None, 128)          0           bidirectional_1[0][0]            
+__________________________________________________________________________________________________
+concatenate_1 (Concatenate)     (None, 256)          0           global_average_pooling1d_1[0][0] 
+                                                                 global_max_pooling1d_1[0][0]     
+__________________________________________________________________________________________________
+dropout_75 (Dropout)            (None, 256)          0           concatenate_1[0][0]              
+__________________________________________________________________________________________________
+dense_1 (Dense)                 (None, 2)            514         dropout_75[0][0]                 
+==================================================================================================
+Total params: 109,909,250
+Trainable params: 427,010
+Non-trainable params: 109,482,240
+__________________________________________________________________________________________________
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Create-train-and-validation-data-generators">
+<a class="anchor" href="#Create-train-and-validation-data-generators" aria-hidden="true"><span class="octicon octicon-link"></span></a>Create train and validation data generators<a class="anchor-link" href="#Create-train-and-validation-data-generators"> </a>
+</h4>
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-python"><pre><span></span><span class="n">train_data</span> <span class="o">=</span> <span class="n">BertSemanticDataGenerator</span><span class="p">(</span>
+    <span class="n">train_df</span><span class="p">[[</span><span class="s2">"question1"</span><span class="p">,</span> <span class="s2">"question2"</span><span class="p">]]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">"str"</span><span class="p">),</span>
+    <span class="n">y_train</span><span class="p">,</span>
+    <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span>
+    <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">val_data</span> <span class="o">=</span> <span class="n">BertSemanticDataGenerator</span><span class="p">(</span>
+    <span class="n">val_df</span><span class="p">[[</span><span class="s2">"question1"</span><span class="p">,</span> <span class="s2">"question2"</span><span class="p">]]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">"str"</span><span class="p">),</span>
+    <span class="n">y_val</span><span class="p">,</span>
+    <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span>
+    <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Train-the-model">
+<a class="anchor" href="#Train-the-model" aria-hidden="true"><span class="octicon octicon-link"></span></a>Train the model<a class="anchor-link" href="#Train-the-model"> </a>
+</h4>
+<p>Training is done only for the top layers to perform "feature extraction", which will allow the model to use the representations of the pretrained model.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-python"><pre><span></span><span class="n">history</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
+    <span class="n">train_data</span><span class="p">,</span>
+    <span class="n">validation_data</span><span class="o">=</span><span class="n">val_data</span><span class="p">,</span>
+    <span class="n">epochs</span><span class="o">=</span><span class="n">epochs</span><span class="p">,</span>
+     <span class="n">use_multiprocessing</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">workers</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Epoch 1/2
+INFO:tensorflow:Reduce to /job:localhost/replica:0/task:0/device:CPU:0 then broadcast to ('/job:localhost/replica:0/task:0/device:CPU:0',).
+INFO:tensorflow:Reduce to /job:localhost/replica:0/task:0/device:CPU:0 then broadcast to ('/job:localhost/replica:0/task:0/device:CPU:0',).
+INFO:tensorflow:Reduce to /job:localhost/replica:0/task:0/device:CPU:0 then broadcast to ('/job:localhost/replica:0/task:0/device:CPU:0',).
+INFO:tensorflow:Reduce to /job:localhost/replica:0/task:0/device:CPU:0 then broadcast to ('/job:localhost/replica:0/task:0/device:CPU:0',).
+INFO:tensorflow:Reduce to /job:localhost/replica:0/task:0/device:CPU:0 then broadcast to ('/job:localhost/replica:0/task:0/device:CPU:0',).
+INFO:tensorflow:Reduce to /job:localhost/replica:0/task:0/device:CPU:0 then broadcast to ('/job:localhost/replica:0/task:0/device:CPU:0',).
+8850/8850 [==============================] - 3281s 366ms/step - loss: 0.4316 - acc: 0.7859 - val_loss: 0.3371 - val_acc: 0.8432
+Epoch 2/2
+8850/8850 [==============================] - 3229s 365ms/step - loss: 0.3474 - acc: 0.8382 - val_loss: 0.3269 - val_acc: 0.8474
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Fine-Tuning">
+<a class="anchor" href="#Fine-Tuning" aria-hidden="true"><span class="octicon octicon-link"></span></a>Fine Tuning<a class="anchor-link" href="#Fine-Tuning"> </a>
+</h3>
+<p>Now BERT model has knowledge of Language &amp; Context now we can unfreeze the BERT pretrained weights &amp; retrain using very low learning rate to solve actual NLP problem</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-python"><pre><span></span><span class="n">bert_model</span><span class="o">.</span><span class="n">trainable</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="c1"># Recompile the model to make the change effective.</span>
+<span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+    <span class="n">optimizer</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">optimizers</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="mf">1e-5</span><span class="p">),</span>
+    <span class="n">loss</span><span class="o">=</span><span class="s2">"categorical_crossentropy"</span><span class="p">,</span>
+    <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="s2">"accuracy"</span><span class="p">],</span>
+<span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">summary</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Model: "model"
+__________________________________________________________________________________________________
+Layer (type)                    Output Shape         Param #     Connected to                     
+==================================================================================================
+input_ids (InputLayer)          [(None, 128)]        0                                            
+__________________________________________________________________________________________________
+attention_masks (InputLayer)    [(None, 128)]        0                                            
+__________________________________________________________________________________________________
+token_type_ids (InputLayer)     [(None, 128)]        0                                            
+__________________________________________________________________________________________________
+tf_bert_model (TFBertModel)     ((None, 128, 768), ( 109482240   input_ids[0][0]                  
+                                                                 attention_masks[0][0]            
+                                                                 token_type_ids[0][0]             
+__________________________________________________________________________________________________
+bidirectional (Bidirectional)   (None, 128, 128)     426496      tf_bert_model[0][0]              
+__________________________________________________________________________________________________
+global_average_pooling1d (Globa (None, 128)          0           bidirectional[0][0]              
+__________________________________________________________________________________________________
+global_max_pooling1d (GlobalMax (None, 128)          0           bidirectional[0][0]              
+__________________________________________________________________________________________________
+concatenate (Concatenate)       (None, 256)          0           global_average_pooling1d[0][0]   
+                                                                 global_max_pooling1d[0][0]       
+__________________________________________________________________________________________________
+dropout_37 (Dropout)            (None, 256)          0           concatenate[0][0]                
+__________________________________________________________________________________________________
+dense (Dense)                   (None, 2)            514         dropout_37[0][0]                 
+==================================================================================================
+Total params: 109,909,250
+Trainable params: 109,909,250
+Non-trainable params: 0
+__________________________________________________________________________________________________
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-python"><pre><span></span><span class="n">history</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
+    <span class="n">train_data</span><span class="p">,</span>
+    <span class="n">validation_data</span><span class="o">=</span><span class="n">val_data</span><span class="p">,</span>
+    <span class="n">epochs</span><span class="o">=</span><span class="n">epochs</span><span class="p">,</span>
+    <span class="n">use_multiprocessing</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">workers</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Epoch 1/2
+8850/8850 [==============================] - 7739s 874ms/step - loss: 0.2853 - accuracy: 0.8741 - val_loss: 0.2712 - val_accuracy: 0.8832
+Epoch 2/2
+8850/8850 [==============================] - 7737s 874ms/step - loss: 0.2139 - accuracy: 0.9100 - val_loss: 0.2477 - val_accuracy: 0.8973
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>After Waiting of 4-5 hours nowour model is trained!</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Evaluate-on-Test-Dataset">
+<a class="anchor" href="#Evaluate-on-Test-Dataset" aria-hidden="true"><span class="octicon octicon-link"></span></a>Evaluate on Test Dataset<a class="anchor-link" href="#Evaluate-on-Test-Dataset"> </a>
+</h3>
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-python"><pre><span></span><span class="n">test_data</span> <span class="o">=</span> <span class="n">BertSemanticDataGenerator</span><span class="p">(</span>
+    <span class="n">test_df</span><span class="p">[[</span><span class="s2">"question1"</span><span class="p">,</span> <span class="s2">"question2"</span><span class="p">]]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">"str"</span><span class="p">),</span>
+    <span class="n">y_test</span><span class="p">,</span>
+    <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span>
+    <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">test_data</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>1890/1890 [==============================] - 529s 280ms/step - loss: 0.2438 - accuracy: 0.9001
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>[0.24381373822689056, 0.9000826478004456]</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We Got 90% Accuracy on Test Dataset which is far better than Naive Bayes</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-python"><pre><span></span><span class="k">def</span> <span class="nf">check_similarity</span><span class="p">(</span><span class="n">sentence1</span><span class="p">,</span> <span class="n">sentence2</span><span class="p">):</span>
+  <span class="n">sentence_pairs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="nb">str</span><span class="p">(</span><span class="n">sentence1</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">sentence2</span><span class="p">)]])</span>
+  <span class="n">test_data</span> <span class="o">=</span> <span class="n">BertSemanticDataGenerator</span><span class="p">(</span>
+      <span class="n">sentence_pairs</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">include_targets</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+  <span class="p">)</span>
+
+  <span class="n">proba</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">test_data</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+  <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">proba</span><span class="p">)</span>
+  <span class="n">proba</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">proba</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="si">:</span><span class="s2"> .2f</span><span class="si">}</span><span class="s2">%"</span>
+  <span class="n">pred</span> <span class="o">=</span> <span class="n">labels</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+  <span class="k">return</span> <span class="n">pred</span><span class="p">,</span> <span class="n">proba</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Try-the-custom-Questions">
+<a class="anchor" href="#Try-the-custom-Questions" aria-hidden="true"><span class="octicon octicon-link"></span></a>Try the custom Questions<a class="anchor-link" href="#Try-the-custom-Questions"> </a>
+</h4>
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-python"><pre><span></span><span class="n">ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">500</span><span class="p">)</span>
+<span class="n">q1</span> <span class="o">=</span> <span class="n">test_df</span><span class="p">[</span><span class="n">test_df</span><span class="p">[</span><span class="s2">"is_duplicate"</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">ind</span><span class="p">][</span><span class="s1">'question1'</span><span class="p">]</span>
+<span class="n">q2</span> <span class="o">=</span> <span class="n">test_df</span><span class="p">[</span><span class="n">test_df</span><span class="p">[</span><span class="s2">"is_duplicate"</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">ind</span><span class="p">][</span><span class="s1">'question2'</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">q1</span><span class="o">+</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">+</span><span class="n">q2</span><span class="p">)</span>
+<span class="n">check_similarity</span><span class="p">(</span><span class="n">q1</span><span class="p">,</span><span class="n">q2</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Why when I read an English article do I understand most of the words but I cannot understand the message of the article very well? How can I improve my reading comprehension?
+I am very poor in English language and even struggle to understand while reading small article also. How can I improve it without attend class?
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>(0, ' 0.81%')</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-python"><pre><span></span><span class="n">ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">500</span><span class="p">)</span>
+<span class="n">q1</span> <span class="o">=</span> <span class="n">test_df</span><span class="p">[</span><span class="n">test_df</span><span class="p">[</span><span class="s2">"is_duplicate"</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">ind</span><span class="p">][</span><span class="s1">'question1'</span><span class="p">]</span>
+<span class="n">q2</span> <span class="o">=</span> <span class="n">test_df</span><span class="p">[</span><span class="n">test_df</span><span class="p">[</span><span class="s2">"is_duplicate"</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">ind</span><span class="p">][</span><span class="s1">'question2'</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">q1</span><span class="o">+</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">+</span><span class="n">q2</span><span class="p">)</span>
+<span class="n">check_similarity</span><span class="p">(</span><span class="n">q1</span><span class="p">,</span><span class="n">q2</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>How many pullups can an average person do?
+How many photos a day does an average person take with their phone.?
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>(1, ' 1.00%')</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+</div>
+
+<script type="application/vnd.jupyter.widget-state+json">
+{"79c51534eee347cb8061845c9598a8b1": {"model_module": "@jupyter-widgets/controls", "model_name": "HBoxModel", "state": {"_view_name": "HBoxView", "_dom_classes": [], "_model_name": "HBoxModel", "_view_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_view_count": null, "_view_module_version": "1.5.0", "box_style": "", "layout": "IPY_MODEL_6b2745d462b24a1581247aaf087c8c12", "_model_module": "@jupyter-widgets/controls", "children": ["IPY_MODEL_3e82aee461924e348ed361f0d966d230", "IPY_MODEL_404a3f9eb80649a49d905e38a31472df"]}}, "6b2745d462b24a1581247aaf087c8c12": {"model_module": "@jupyter-widgets/base", "model_name": "LayoutModel", "state": {"_view_name": "LayoutView", "grid_template_rows": null, "right": null, "justify_content": null, "_view_module": "@jupyter-widgets/base", "overflow": null, "_model_module_version": "1.2.0", "_view_count": null, "flex_flow": null, "width": null, "min_width": null, "border": null, "align_items": null, "bottom": null, "_model_module": "@jupyter-widgets/base", "top": null, "grid_column": null, "overflow_y": null, "overflow_x": null, "grid_auto_flow": null, "grid_area": null, "grid_template_columns": null, "flex": null, "_model_name": "LayoutModel", "justify_items": null, "grid_row": null, "max_height": null, "align_content": null, "visibility": null, "align_self": null, "height": null, "min_height": null, "padding": null, "grid_auto_rows": null, "grid_gap": null, "max_width": null, "order": null, "_view_module_version": "1.2.0", "grid_template_areas": null, "object_position": null, "object_fit": null, "grid_auto_columns": null, "margin": null, "display": null, "left": null}}, "3e82aee461924e348ed361f0d966d230": {"model_module": "@jupyter-widgets/controls", "model_name": "FloatProgressModel", "state": {"_view_name": "ProgressView", "style": "IPY_MODEL_9f1f543b8caf4b56ad8ebc212a4b9bcf", "_dom_classes": [], "description": "Downloading: 100%", "_model_name": "FloatProgressModel", "bar_style": "success", "max": 231508, "_view_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "value": 231508, "_view_count": null, "_view_module_version": "1.5.0", "orientation": "horizontal", "min": 0, "description_tooltip": null, "_model_module": "@jupyter-widgets/controls", "layout": "IPY_MODEL_81845e5c98d24f26b1e349124db910bb"}}, "404a3f9eb80649a49d905e38a31472df": {"model_module": "@jupyter-widgets/controls", "model_name": "HTMLModel", "state": {"_view_name": "HTMLView", "style": "IPY_MODEL_603ab12269b545c8b16c6cbd2a679b22", "_dom_classes": [], "description": "", "_model_name": "HTMLModel", "placeholder": "\u200b", "_view_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "value": " 232k/232k [00:00&lt;00:00, 1.83MB/s]", "_view_count": null, "_view_module_version": "1.5.0", "description_tooltip": null, "_model_module": "@jupyter-widgets/controls", "layout": "IPY_MODEL_bc21b8ed339b486ea8d7e21ad0098577"}}, "9f1f543b8caf4b56ad8ebc212a4b9bcf": {"model_module": "@jupyter-widgets/controls", "model_name": "ProgressStyleModel", "state": {"_view_name": "StyleView", "_model_name": "ProgressStyleModel", "description_width": "initial", "_view_module": "@jupyter-widgets/base", "_model_module_version": "1.5.0", "_view_count": null, "_view_module_version": "1.2.0", "bar_color": null, "_model_module": "@jupyter-widgets/controls"}}, "81845e5c98d24f26b1e349124db910bb": {"model_module": "@jupyter-widgets/base", "model_name": "LayoutModel", "state": {"_view_name": "LayoutView", "grid_template_rows": null, "right": null, "justify_content": null, "_view_module": "@jupyter-widgets/base", "overflow": null, "_model_module_version": "1.2.0", "_view_count": null, "flex_flow": null, "width": null, "min_width": null, "border": null, "align_items": null, "bottom": null, "_model_module": "@jupyter-widgets/base", "top": null, "grid_column": null, "overflow_y": null, "overflow_x": null, "grid_auto_flow": null, "grid_area": null, "grid_template_columns": null, "flex": null, "_model_name": "LayoutModel", "justify_items": null, "grid_row": null, "max_height": null, "align_content": null, "visibility": null, "align_self": null, "height": null, "min_height": null, "padding": null, "grid_auto_rows": null, "grid_gap": null, "max_width": null, "order": null, "_view_module_version": "1.2.0", "grid_template_areas": null, "object_position": null, "object_fit": null, "grid_auto_columns": null, "margin": null, "display": null, "left": null}}, "603ab12269b545c8b16c6cbd2a679b22": {"model_module": "@jupyter-widgets/controls", "model_name": "DescriptionStyleModel", "state": {"_view_name": "StyleView", "_model_name": "DescriptionStyleModel", "description_width": "", "_view_module": "@jupyter-widgets/base", "_model_module_version": "1.5.0", "_view_count": null, "_view_module_version": "1.2.0", "_model_module": "@jupyter-widgets/controls"}}, "bc21b8ed339b486ea8d7e21ad0098577": {"model_module": "@jupyter-widgets/base", "model_name": "LayoutModel", "state": {"_view_name": "LayoutView", "grid_template_rows": null, "right": null, "justify_content": null, "_view_module": "@jupyter-widgets/base", "overflow": null, "_model_module_version": "1.2.0", "_view_count": null, "flex_flow": null, "width": null, "min_width": null, "border": null, "align_items": null, "bottom": null, "_model_module": "@jupyter-widgets/base", "top": null, "grid_column": null, "overflow_y": null, "overflow_x": null, "grid_auto_flow": null, "grid_area": null, "grid_template_columns": null, "flex": null, "_model_name": "LayoutModel", "justify_items": null, "grid_row": null, "max_height": null, "align_content": null, "visibility": null, "align_self": null, "height": null, "min_height": null, "padding": null, "grid_auto_rows": null, "grid_gap": null, "max_width": null, "order": null, "_view_module_version": "1.2.0", "grid_template_areas": null, "object_position": null, "object_fit": null, "grid_auto_columns": null, "margin": null, "display": null, "left": null}}}
+</script>
+
+
+
+  </div><!-- from https://github.com/utterance/utterances -->
+<script src="https://utteranc.es/client.js"
+        repo="karm216/Fastpages-Notebooks"
+        issue-term="title"
+        label="blogpost-comment"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script><a class="u-url" href="/Fastpages-Notebooks/fastpages/jupyter/2021/04/18/Quora-Questions-Pairs.html" hidden></a>
+</article>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/Fastpages-Notebooks/"></data>
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col">
+        <p class="feed-subscribe">
+          <a href="/Fastpages-Notebooks/feed.xml">
+            <svg class="svg-icon orange">
+              <use xlink:href="/Fastpages-Notebooks/assets/minima-social-icons.svg#rss"></use>
+            </svg><span>Subscribe</span>
+          </a>
+        </p>
+      </div>
+      <div class="footer-col">
+        <p>An easy to use blogging platform with support for Jupyter Notebooks.</p>
+      </div>
+    </div>
+
+    <div class="social-links"><ul class="social-media-list"><li><a rel="me" href="https://github.com/karm216" title="karm216"><svg class="svg-icon grey"><use xlink:href="/Fastpages-Notebooks/assets/minima-social-icons.svg#github"></use></svg></a></li><li><a rel="me" href="https://twitter.com/KarmKinetic" title="KarmKinetic"><svg class="svg-icon grey"><use xlink:href="/Fastpages-Notebooks/assets/minima-social-icons.svg#twitter"></use></svg></a></li></ul>
+</div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
