@@ -120,7 +120,7 @@ window.onload = wrap_img;
 
   <div class="post-content e-content" itemprop="articleBody">
     <ul class="section-nav">
-<li class="toc-entry toc-h3"><a href="#Face-Recognition-:-Overview">Face Recognition : Overview </a></li>
+<li class="toc-entry toc-h3"><a href="#Face-Recognition-:-Pipeline">Face Recognition : Pipeline </a></li>
 <li class="toc-entry toc-h3"><a href="#Exploring-Data-set">Exploring Data-set </a></li>
 <li class="toc-entry toc-h3"><a href="#Data-Augmentation">Data Augmentation </a>
 <ul>
@@ -146,16 +146,19 @@ window.onload = wrap_img;
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Face-Recognition-:-Overview">
-<a class="anchor" href="#Face-Recognition-:-Overview" aria-hidden="true"><span class="octicon octicon-link"></span></a>Face Recognition : Overview<a class="anchor-link" href="#Face-Recognition-:-Overview"> </a>
+<h3 id="Face-Recognition-:-Pipeline">
+<a class="anchor" href="#Face-Recognition-:-Pipeline" aria-hidden="true"><span class="octicon octicon-link"></span></a>Face Recognition : Pipeline<a class="anchor-link" href="#Face-Recognition-:-Pipeline"> </a>
 </h3>
-<p>Here I trained Face Recognition model on 5 boys &amp; 3 girls.  We can divide training process for in follwing steps:</p>
+<p>Here I trained Face Recognition model on 5 boys &amp; 3 girls.  We can divide training process for in follwing steps: <br></p>
 <ol>
 <li>Data Augmentation : I took 5 original images of 1 person &amp; convert it into 30 images</li>
 <li>Face Detection : Detect faces using OpenCv's DNN "caffe" model &amp; crop them</li>
 <li>Face Embeddings: Getting Facial Landmarks of shape (128,1) from cropped faces using FaceNet model. </li>
 <li>Face Classification: Now Using this Facial landmarks we can train our model using any classification algorithm, I have used SVM classifier.</li>
 </ol>
+<p>Following image shows Face recognition pipeline:
+<br>&lt;/br&gt;
+<img src="/Finger-Count-ResNet/images/copied_from_nb/Attendance.png" alt=""></p>
 
 </div>
 </div>
