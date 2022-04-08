@@ -8,9 +8,9 @@
 
 title: Karm's Blogs
 description: An easy to use blogging platform with support for Jupyter Notebooks.
-github_username: karm216
+github_username: karm-patel
 # you can comment the below line out if your repo name is not different than your baseurl
-github_repo: "Fastpages-Notebooks"
+github_repo: "Blogs"
 
 # OPTIONAL: override baseurl and url if using a custom domain
 # Note: leave out the trailing / from this value. 
@@ -39,7 +39,7 @@ baseurl: "/Blogs" # the subpath of your site, e.g. "/blog".
 # Github and twitter are optional:
 minima:
   social_links:
-    twitter: KarmKinetic
+    twitter: KarmPatel216
     github: karm-patel
 
 # Set this to true to get LaTeX math equation support
