@@ -1,1 +1,1 @@
-Sitemap: https://karm216.github.io/Blogs/sitemap.xml
+Sitemap: https://karm-patel.github.io/Blogs/sitemap.xml
