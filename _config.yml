@@ -14,7 +14,7 @@ github_repo: "Fastpages-Notebooks"
 
 # OPTIONAL: override baseurl and url if using a custom domain
 # Note: leave out the trailing / from this value. 
-url: "https://karm216.github.io" # the base hostname & protocol for your site, e.g. http://example.com
+url: "https://karm-patel.github.io" # the base hostname & protocol for your site, e.g. http://example.com
 
 ###########################################################
 #########  Special Instructions for baseurl ###############
@@ -40,7 +40,7 @@ baseurl: "/Blogs" # the subpath of your site, e.g. "/blog".
 minima:
   social_links:
     twitter: KarmKinetic
-    github: karm216
+    github: karm-patel
 
 # Set this to true to get LaTeX math equation support
 use_math: 
